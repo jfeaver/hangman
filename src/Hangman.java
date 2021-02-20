@@ -29,8 +29,12 @@ public class Hangman {
         gallows = new Gallows();
         System.out.println(message.cheatersNeverProsper());
         while(!(won() || lost() || quit)) {
-            // FIXME: NullPointer if I press cancel here.
-            String guess = JOptionPane.showInputDialog(message.toString() + "\nPlease choose a letter");
+            JLabel gallowsLabel = new JLabel(gallows.toString());
+            JLabel blankLabel = new JLabel("");
+            String promptHtml = "<html>" + message.toString() + "<br/>Please choose a letter:</html>";
+
+            JLabel promptLabel = new JLabel(promptHtml);
+            String guess = JOptionPane.showInputDialog(new JLabel[] {gallowsLabel, blankLabel, promptLabel});
             if (guess == null) {
                 quit = true; // Cancel button is pressed
             } else if (!guess.isBlank()) {
@@ -44,9 +48,11 @@ public class Hangman {
     private void resolve() {
         // show the result
         if (!quit) {
+            JLabel gallowsLabel = new JLabel(gallows.toString());
             String gameResult = won() ? "You Win!" : "You lost... your life...";
             gameResult = gameResult + " The word was \"" + message.cheatersNeverProsper() + "\"";
-            JOptionPane.showMessageDialog(null, gameResult);
+            JLabel gameResultLabel = new JLabel(gameResult);
+            JOptionPane.showMessageDialog(null, new JLabel[] {gallowsLabel, gameResultLabel});
         }
         // reset the quit status
         quit = false;
