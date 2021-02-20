@@ -2,6 +2,7 @@ import javax.swing.*;
 
 public class Hangman {
     private Message message;
+    private Gallows gallows;
     private boolean quit = false;
 
     public static void main(String[] args) {
@@ -25,6 +26,7 @@ public class Hangman {
 
     private void play() {
         message = new Message();
+        gallows = new Gallows();
         System.out.println(message.cheatersNeverProsper());
         while(!(won() || lost() || quit)) {
             // FIXME: NullPointer if I press cancel here.
@@ -32,7 +34,9 @@ public class Hangman {
             if (guess == null) {
                 quit = true; // Cancel button is pressed
             } else if (!guess.isBlank()) {
-                message.guess(guess.charAt(0));
+                if (!message.guess(guess.charAt(0))) {
+                    gallows.incrementHangman();
+                };
             }
         }
     }
@@ -53,6 +57,6 @@ public class Hangman {
     }
 
     private boolean lost() {
-        return false; // false will become gallows.isDead()
+        return gallows.isDead();
     }
 }
