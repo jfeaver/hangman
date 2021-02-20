@@ -2,6 +2,7 @@ import javax.swing.*;
 
 public class Hangman {
     private Message message;
+    private boolean quit = false;
 
     public static void main(String[] args) {
         Hangman game = new Hangman();
@@ -9,37 +10,42 @@ public class Hangman {
         int again;
         do {
             game.play();
-            game.showResult();
+            game.resolve();
             again = JOptionPane.showOptionDialog(
                     null,
                     "Play again?",
                     null,
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
-                    null,     //do not use a custom Icon
-                    options,  //the titles of buttons
+                    null,
+                    options,
                     options[0]);
         } while(again == JOptionPane.YES_OPTION);
     }
 
-    private void getMessage() {
-        this.message = new Message();
-    }
-
     private void play() {
-        getMessage();
+        message = new Message();
         System.out.println(message.cheatersNeverProsper());
-        while(!(won() || lost())) {
+        while(!(won() || lost() || quit)) {
             // FIXME: NullPointer if I press cancel here.
-            char guessChar = JOptionPane.showInputDialog(message.toString() + "\nPlease choose a letter").charAt(0);
-            message.guess(guessChar);
+            String guess = JOptionPane.showInputDialog(message.toString() + "\nPlease choose a letter");
+            if (guess == null) {
+                quit = true; // Cancel button is pressed
+            } else if (!guess.isBlank()) {
+                message.guess(guess.charAt(0));
+            }
         }
     }
 
-    private void showResult() {
-        String gameResult = won() ? "You Win!" : "You lost... your life...";
-        gameResult = gameResult + " The word was \"" + message.toString() +"\"";
-        JOptionPane.showMessageDialog(null, gameResult);
+    private void resolve() {
+        // show the result
+        if (!quit) {
+            String gameResult = won() ? "You Win!" : "You lost... your life...";
+            gameResult = gameResult + " The word was \"" + message.cheatersNeverProsper() + "\"";
+            JOptionPane.showMessageDialog(null, gameResult);
+        }
+        // reset the quit status
+        quit = false;
     }
 
     private boolean won() {
